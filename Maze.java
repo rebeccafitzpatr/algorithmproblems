@@ -3,9 +3,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
-public class Mazeproblem {
+public class Maze {
 // given a table of size n x n, where each cell is totally separated by boundaries on all sides, and a sequence of m pairs of adjacent cells in the table.
 // We will process the pairs in sequence. The first pair contains two integers, n and m. 
 // And the following m pairs contains to integers that are neighbouring in the table, of which we will destroy the boundary between them.
@@ -17,16 +18,35 @@ public class Mazeproblem {
     int m = in.nextInt();
 
     ArrayList<Bag> bags = new ArrayList<Bag>();
+    HashMap<Integer, int[]> pairs = new HashMap<Integer, int[]>();
 
     for (int i = 0; i < m; i++) {
-      int x = in.nextInt();
-      int y = in.nextInt();
+      int first = in.nextInt();
+      int second = in.nextInt();
+      int x;
+      int y;
       Bag xBag = null;
       Bag yBag = null;
-      boolean sameBag = false;
+      boolean newEntry = true;
+      boolean addPair = true;
+
+      if (first > second) {
+        x = second;
+        y = first;
+      } else {
+        x = first;
+        y = second;
+      }
+
+      
 
       ArrayList<Bag> bagToRemove = new ArrayList<Bag>();
       for (Bag bag : bags) {
+        if (bag.findInBag(x) & bag.findInBag(y)) {
+          addPair = false;
+        } else {}
+      
+
         if (bag.findInBag(x)) {
           xBag = bag;
           bagToRemove.add(bag);
@@ -36,6 +56,28 @@ public class Mazeproblem {
           bagToRemove.add(bag);
         }
       }
+
+      if (addPair == true) {
+
+        for (int key : pairs.keySet()) {
+            if (key == x) {
+              newEntry = false;
+              int[] oldValues = pairs.get(key);
+              int[] values = new int[oldValues.length + 1]; 
+              for (int j = 0; j < oldValues.length; j++) {
+                values[j] = oldValues[j];
+              }
+              values[values.length -1] = y;
+              pairs.put(x, values);
+
+            }
+        }
+        if (newEntry == true) {
+          pairs.put(x, new int[] {y});
+
+        }
+      }
+
       for(Bag bag: bagToRemove) {
         bags.remove(bag);
       }
@@ -55,50 +97,78 @@ public class Mazeproblem {
 
     }
 
-    System.out.println("+-+-+-+-+");
+    out.print("+");
+    for (int p = 0; p < n-1; p ++) {
+      out.print("-+");
+    }
+    out.println("-+");
+    for (int i = 0; i < n; i++) {
+      out.print("|");
+      for (int j = n*i; j < n * (i + 1); j++) {
+        boolean boundaryBroken = false;
+        out.print(" ");
+        for (int key : pairs.keySet()) {
+          if (key == j) {
+            int[] values = pairs.get(key);
+            for (int value : values) {
+              if (value == j + 1) {
+                out.print(" ");
+                boundaryBroken = true;
+              }
+            }
 
-    for (int k = 0; k < n ; k ++) {
-      System.out.print("|");
-      for (int l = 4*k; l < 4*(k+1); l++) {
-        boolean output = false;
-        
-        for (Bag bag : bags) {
-          if (bag.findInBag(l) & bag.findInBag(l + 1)) {
-            System.out.print(" ");
-            output = true;
+
+             
           }
         }
-        if (output == false) {
-          System.out.print("|");
-        }
-        System.out.print(" ");
-        
-      }
-      System.out.println("|");
 
+        if (boundaryBroken == false) {
+              if (j == n * (i+1) -1) {
+                out.println("|");
+              } else {
+              out.print("|");
+              }
+        }
+      }
 
       
-      System.out.print("+");
-      for (int l = 4*k; l < 4*(k+1); l++) {
-        boolean output = false;
-        
-        for (Bag bag : bags) {
-          if (bag.findInBag(l) & bag.findInBag(l + 4)) {
-            System.out.print(" +");
-            output = true;
+
+      if ( i == n - 1 ) {
+        out.print("+");
+        for (int p = 0; p < n-1; p ++) {
+          out.print("-+");
+        }
+        out.println("-+");
+      } else {
+      
+
+      for (int j = n*i; j < n * (i + 1); j++) {
+        boolean boundaryBroken = false;
+        out.print("+");
+        for (int key : pairs.keySet()) {
+          if (key == j) {
+            int[] values = pairs.get(key);
+            for (int value : values) {
+              if (value == j + n) {
+                out.print(" ");
+                boundaryBroken = true;
+              }
+            }
 
           }
         }
 
-        if (output == false) {
-          System.out.print("-+");
+        if (boundaryBroken == false) {
+          
+          out.print("-");
+          
         }
-        System.out.print(" ");
-        
       }
-      System.out.println("+");
-
+      out.println("+");
     }
+  } 
+
+    
 
     out.close();
   }
