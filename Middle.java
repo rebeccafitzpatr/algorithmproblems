@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Middle {
@@ -12,23 +11,32 @@ public class Middle {
     
     int m = in.nextInt();
 
-    ArrayList<Integer> numbers = new ArrayList<Integer>();
+    int[] numbers = new int[1];
+    int count = 0;
+
 
     for (int i = 0; i < m; i++) {
       int first = in.nextInt();
       if (first == 1) {
         int second = in.nextInt();
-        if (numbers.size() == 0) {
-          numbers.add(second);
-
+        if (count < numbers.length) {
+          numbers[count] = second;
+          
         } else {
-          ArrayList<Integer> newNumbers = addNumber(numbers, second);
-          numbers = newNumbers;
+          int[] newArray = new int[numbers.length*2];
+          for (int j = 0; j < numbers.length; j++) {
+            newArray[j] = numbers[j];
+            
+            
+          }
+          newArray[count] = second;
+          numbers = newArray;
         }
+        count++;
 
       } else if (first == 0) {
-        int middle = (numbers.size() - 1 ) /2;
-        out.println(numbers.get(middle));
+        
+        out.println(findMiddle(numbers, count));
       }
     }
     // YOUR CODE GOES HERE.
@@ -36,38 +44,30 @@ public class Middle {
     out.close();
   }
 
-  public static ArrayList<Integer> addNumber(ArrayList<Integer> oldNumbers, int newNumber) {
-    ArrayList<Integer> newNumbers = new ArrayList<Integer>();
-    boolean added = false;
-
-    int i = 0;
-    while (i < oldNumbers.size()) {
-      
-      if (!added) {
-        if (oldNumbers.get(i) <= newNumber) {
-
-          newNumbers.add(oldNumbers.get(i));
-          i++;
-        } else {
-          newNumbers.add(newNumber);
-          added = true;
-        }
-      } else {
-        newNumbers.add(oldNumbers.get(i));
-        i++;
-      }
-
-      
-    }
-    if (added == false) {
-      newNumbers.add(newNumber);
-    }
-
+  public static int findMiddle(int[] numbers, int count) {
     
 
-    return newNumbers;
-  }
-
+      int size = count;
+      int output = 0;
+  
+      for (int i = 0; i <= (size - 1)/2; i++) {
+        int min = i;
+  
+        for (int j = i; j < size; j++) {
+          if (numbers[j] < numbers[min]) {
+            min = j;
+          }
+        }
+        int temp = numbers[min];
+        numbers[min] = numbers[i];
+        numbers[i] = temp;
+        output = temp;
+  
+      }
+  
+      return output;
+  
+    }
   static class FastScanner {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     StringTokenizer st = new StringTokenizer("");
